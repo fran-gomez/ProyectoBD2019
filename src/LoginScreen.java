@@ -33,12 +33,18 @@ public class LoginScreen extends JPanel {
         this.add(login);
     }
 
-    private void armarUIprincipal() {
+    private void limpiarUI() {
         username.setVisible(false);
         password.setVisible(false);
         login.setVisible(false);
+    }
 
-        new SelectScreen(ventana);
+    private void adminUI() {
+        new AdminUI(ventana);
+    }
+
+    private void empleadoUI() {
+        new EmpleadoUI(ventana);
     }
 
     private class LoginListener implements ActionListener {
@@ -53,8 +59,16 @@ public class LoginScreen extends JPanel {
 
             try {
                 conexion = DriverManager.getConnection("jdbc:mysql://" + srv + "/" + bd + "?serverTimezone=America/Argentina/Buenos_Aires", uname, psswd);
-                if (conexion != null)
-                    armarUIprincipal();
+
+                if (conexion != null) {
+                    limpiarUI();
+                    if (uname == "admin")
+                        adminUI();
+                    else if (uname == "empleado")
+                        empleadoUI();
+                    else
+                        throw new RuntimeException("Not yet implemented");
+                }
             } catch (SQLException e) {
                 System.out.println(e);
             }
@@ -89,7 +103,7 @@ public class LoginScreen extends JPanel {
                 try {
                     conexion = DriverManager.getConnection("jdbc:mysql://" + srv + "/" + bd + "?serverTimezone=America/Argentina/Buenos_Aires", uname, psswd);
                     if (conexion != null)
-                        armarUIprincipal();
+                        limpiarUI();
                 } catch (SQLException e) {
                     System.out.println(e);
                 }

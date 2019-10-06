@@ -185,20 +185,21 @@ DROP USER cliente@'%';
 FLUSH PRIVILEGES;
 CREATE USER cliente@'%' IDENTIFIED BY 'cliente';
 
-SELECT	salidas.vuelo, salidas.modelo_avion, salidas.hora_sale, salidas.hora_llega,
-		iv.fecha,
-		a_salida.codigo as codigo_salida, a_salida.nombre as nombre_salida, a_salida.pais as pais_salida, a_salida.estado as estado_salida, a_salida.ciudad as ciudad_salida,
-		a_llegada.codigo as codigo_salida, a_llegada.nombre as nombre_salida, a_llegada.pais as pais_salida, a_llegada.estado as estado_salida, a_llegada.ciudad as ciudad_salida,
-		b.cant_asientos + (b.cant_asientos * c.porcentaje)  as asientos_disponibles
-
-FROM instancias_vuelo as iv JOIN salidas 					on iv.vuelo = salidas.vuelo
-							JOIN vuelos_programados as vp 	on vp.numero = salidas.vuelo
-							JOIN aeropuertos as a_salida	on a_salida.codigo = vp.aeropuerto_salida
-							JOIN aeropuertos as a_llegada 	on a_llegada.codigo = vp.aeropuerto_llegada
-							JOIN brinda as b on (b.vuelo = salidas.vuelo AND b.dia = salidas.dia)
-							JOIN reserva_vuelo_clase as rvc on (rvc.vuelo = salidas.vuelo AND rvc.fecha_vuelo = iv.fecha)
-							JOIN clases as c on c.nombre = (select clase 
-															from brinda
-															where (vuelo = salidas.vuelo AND dia = salidas.dia));
+# precio pasaje, cantidad disponibles = cant_asientos + cant_asientos*porcentaje - count(rvc.numero)
+CREATE VIEW vuelos_disponibles AS
+SELECT	salidas.vuelo, salidas.modelo_avion as modelo, salidas.dia, salidas.hora_sale, salidas.hora_llega, TIMEDIFF(salidas.hora_llega, salidas.hora_sale) as estimado,
+		iv.fecha, 
+		a_salida.codigo as co_sale, a_salida.nombre as nom_sale, a_salida.pais as pais_sale, a_salida.estado as est_sale, a_salida.ciudad as ciu_sale,
+		a_llegada.codigo as co_llega, a_llegada.nombre as nom_llega, a_llegada.pais as pais_llega, a_llegada.estado as est_llega, a_llegada.ciudad as ciu_llega,
+		brinda.clase, brinda.cant_asientos + (brinda.cant_asientos * clases.porcentaje) as asientos, brinda.cant_asientos + (brinda.cant_asientos * clases.porcentaje) - count(rvc.numero) as disp
+FROM instancias_vuelo as iv 
+              	JOIN salidas 					on iv.vuelo = salidas.vuelo and iv.dia = salidas.dia
+				JOIN vuelos_programados as vp 	on vp.numero = salidas.vuelo
+				JOIN aeropuertos as a_salida	on a_salida.codigo = vp.aeropuerto_salida
+				JOIN aeropuertos as a_llegada 	on a_llegada.codigo = vp.aeropuerto_llegada
+				JOIN brinda						on brinda.vuelo = salidas.vuelo and brinda.dia = salidas.dia
+				LEFT JOIN reserva_vuelo_clase as rvc on rvc.vuelo = salidas.vuelo and rvc.fecha_vuelo = iv.fecha and rvc.clase = brinda.clase
+				JOIN clases						on clases.nombre = brinda.clase
+group by salidas.vuelo, iv.fecha, brinda.clase;
 
 GRANT SELECT ON vuelos_disponibles to cliente@'%';
