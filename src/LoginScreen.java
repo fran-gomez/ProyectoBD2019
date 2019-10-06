@@ -1,8 +1,6 @@
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -24,8 +22,6 @@ public class LoginScreen extends JPanel {
         login = new JButton("Login");
 
         login.addActionListener(new LoginListener());
-        login.addKeyListener(new EnterListener());
-        password.addKeyListener(new EnterListener());
 
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         this.add(username);
@@ -37,14 +33,6 @@ public class LoginScreen extends JPanel {
         username.setVisible(false);
         password.setVisible(false);
         login.setVisible(false);
-    }
-
-    private void adminUI() {
-        new AdminUI(ventana);
-    }
-
-    private void empleadoUI() {
-        new EmpleadoUI(ventana);
     }
 
     private class LoginListener implements ActionListener {
@@ -62,12 +50,12 @@ public class LoginScreen extends JPanel {
 
                 if (conexion != null) {
                     limpiarUI();
-                    if (uname == "admin")
-                        adminUI();
-                    else if (uname == "empleado")
-                        empleadoUI();
+                    if (uname.equals("admin"))
+                        new AdminUI(ventana, conexion);
+                    else if (uname.equals("empleado"))
+                        new EmpleadoUI(ventana, conexion);
                     else
-                        throw new RuntimeException("Not yet implemented");
+                        System.out.println("Not yet implemented");
                 }
             } catch (SQLException e) {
                 System.out.println(e);
@@ -75,39 +63,4 @@ public class LoginScreen extends JPanel {
         }
     }
 
-    private class EnterListener implements KeyListener {
-        protected String srv = "localhost:3306";
-        protected String bd = "vuelos";
-        protected String uname = username.getText();
-        protected String psswd = password.getText();
-        protected Connection conexion;
-
-        @Override
-        public void keyTyped(KeyEvent keyEvent) {
-
-        }
-
-        @Override
-        public void keyPressed(KeyEvent keyEvent) {
-            if (keyEvent.getKeyChar() == '\n') {
-                srv = "localhost:3306";
-                bd = "vuelos";
-                uname = username.getText();
-                psswd = password.getText();
-            }
-        }
-
-        @Override
-        public void keyReleased(KeyEvent keyEvent) {
-            if (keyEvent.getKeyChar() == '\n') {
-                try {
-                    conexion = DriverManager.getConnection("jdbc:mysql://" + srv + "/" + bd + "?serverTimezone=America/Argentina/Buenos_Aires", uname, psswd);
-                    if (conexion != null)
-                        limpiarUI();
-                } catch (SQLException e) {
-                    System.out.println(e);
-                }
-            }
-        }
-    }
 }
