@@ -1,7 +1,7 @@
-/src/AdminUI.class
-/src/EmpleadoUI.class
-/src/LoginScreen$1.class
-/src/LoginScreen$LoginListener.class
-/src/LoginScreen.class
-/src/Main.class
-/src/mysql-connector-java-8.0.16
+src/AdminUI.class
+src/EmpleadoUI.class
+src/LoginScreen$1.class
+src/LoginScreen$LoginListener.class
+src/LoginScreen.class
+src/Main.class
+src/mysql-connector-java-8.0.16.jar
