@@ -4,6 +4,7 @@ import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.SQLInvalidAuthorizationSpecException;
 
 public class LoginScreen extends JPanel {
 
@@ -74,6 +75,11 @@ public class LoginScreen extends JPanel {
 
                 }
 
+            } catch (SQLInvalidAuthorizationSpecException e) {
+                JOptionPane.showMessageDialog(null,
+                        "Error en la contraseña de " + uname,
+                        "BD-2019",
+                        JOptionPane.ERROR_MESSAGE);
             } catch (SQLException e) {
                 System.out.println(e);
             }

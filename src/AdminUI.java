@@ -18,7 +18,6 @@ public class AdminUI extends JPanel {
 
     public AdminUI(JFrame ventana, Connection conexion) {
 
-        String[] initData = {"cad1", "cad2", "cad3"};
         try {
             this.conexion = conexion;
             this.ventana = ventana;
@@ -27,7 +26,7 @@ public class AdminUI extends JPanel {
             resultados = new JTable();
 
             tablas = new JList<>(obtenerTablas());
-            campos = new JList<>(initData);
+            campos = new JList<>();
 
             sentencias.addKeyListener(new EnterListener());
             tablas.addListSelectionListener(new SeleccionListener(this));
@@ -121,6 +120,7 @@ public class AdminUI extends JPanel {
 
                 campos.removeSelectionInterval(0, i-1);
                 campos.setListData(camposTabla);
+
             } catch (SQLException e) {
                 e.printStackTrace();
             }
