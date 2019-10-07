@@ -35,6 +35,15 @@ public class LoginScreen extends JPanel {
         login.setVisible(false);
     }
 
+    private boolean esNumero(String str) { 
+        try {  
+            Integer.parseInt(str);  
+            return true;
+        } catch(NumberFormatException e){  
+            return false;  
+        }  
+    }
+
     private class LoginListener implements ActionListener {
 
         public void actionPerformed(ActionEvent actionEvent) {
@@ -46,17 +55,25 @@ public class LoginScreen extends JPanel {
             Connection conexion;
 
             try {
-                conexion = DriverManager.getConnection("jdbc:mysql://" + srv + "/" + bd + "?serverTimezone=America/Argentina/Buenos_Aires", uname, psswd);
+                if (uname.equals("admin")) {
+                    conexion = DriverManager.getConnection("jdbc:mysql://" + srv + "/" + bd + "?serverTimezone=America/Argentina/Buenos_Aires", uname, psswd);
+                    
+                    if (conexion != null){
+                        limpiarUI();
+                        if (uname.equals("admin")){
+                            new AdminUI(ventana, conexion);
+                       }
+                    }
 
-                if (conexion != null) {
-                    limpiarUI();
-                    if (uname.equals("admin"))
-                        new AdminUI(ventana, conexion);
-                    else if (uname.equals("empleado"))
-                        new EmpleadoUI(ventana, conexion);
-                    else
-                        System.out.println("Not yet implemented");
+                } else if(esNumero(uname)){ // ha de ser un legajo de un empleado
+                    conexion = DriverManager.getConnection("jdbc:mysql://" + srv + "/" + bd + "?serverTimezone=America/Argentina/Buenos_Aires", "empleado", "empleado");
+
+                    if (conexion != null) {
+                        new EmpleadoUI(ventana, conexion, Integer.parseInt(uname), psswd);
+                    }
+
                 }
+
             } catch (SQLException e) {
                 System.out.println(e);
             }
