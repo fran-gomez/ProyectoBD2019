@@ -251,7 +251,7 @@ public class EmpleadoUI {
         }
 
 	    String consultaString = 
-	    "SELECT	salidas.vuelo, salidas.hora_sale, salidas.modelo_avion as modelo, salidas.hora_llega, TIMEDIFF(salidas.hora_llega, salidas.hora_sale) as estimado, " +  
+	    "SELECT	salidas.vuelo, iv.fecha, salidas.hora_sale, salidas.modelo_avion as modelo, salidas.hora_llega, TIMEDIFF(salidas.hora_llega, salidas.hora_sale) as estimado, " +  
  		"a_origen.nombre as nom_sale, a_destino.nombre as nom_llega" + 
 		" FROM aeropuertos as a_destino" +
 		" JOIN aeropuertos as a_origen" +
@@ -386,6 +386,7 @@ public class EmpleadoUI {
 	    	while (resultado.next()){
 		    	containerVuelos.add(createVueloPanel(
 		    		resultado.getString("vuelo"), 
+		    		resultado.getString("fecha"),
 		    		resultado.getString("hora_sale"),
 		    		resultado.getString("hora_llega"),
 		    		resultado.getString("estimado"),
@@ -401,7 +402,7 @@ public class EmpleadoUI {
     	}
 	}
 
-    private JPanel createVueloPanel(String vuelo, String hr_sale, String hr_llega, String estimado, String modelo, String salida, String destino){
+    private JPanel createVueloPanel(String vuelo, String fecha, String hr_sale, String hr_llega, String estimado, String modelo, String salida, String destino){
     	JPanel vueloPanel = new JPanel();
 
     	vueloPanel.setPreferredSize(new java.awt.Dimension(600, 30));
@@ -451,7 +452,7 @@ public class EmpleadoUI {
 
         jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                selectVuelo(vuelo);
+                selectVuelo(vuelo, fecha);
             }
         });;
 
@@ -459,71 +460,114 @@ public class EmpleadoUI {
     	return vueloPanel;
     }
 
-    private void selectVuelo(String vuelo){
+    private void selectVuelo(String vuelo, String fecha){
     	// TODO cambiar de pantalla
 
     	if(tabbedPane.getTitleAt(tabbedPane.getTabCount() - 1).indexOf("vuelo") >= 0) {
     		tabbedPane.remove(tabbedPane.getTabCount() - 1);
     	}
 
+    	JPanel container = new JPanel();
+
+    	JPanel panelEtiquetas = new JPanel();
+    	panelEtiquetas.setPreferredSize(new java.awt.Dimension(600, 30));
+        panelEtiquetas.setLayout(new java.awt.GridLayout(0, 3));
+
+        JLabel etiquetaNombreClase = new JLabel();
+        etiquetaNombreClase.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        etiquetaNombreClase.setText("Clase");
+        etiquetaNombreClase.setAlignmentY(0.0F);
+        panelEtiquetas.add(etiquetaNombreClase);
+
+		JLabel etiquetaPrecio = new JLabel();
+        etiquetaPrecio.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        etiquetaPrecio.setText("Precio");
+        etiquetaPrecio.setAlignmentY(0.0F);
+        panelEtiquetas.add(etiquetaPrecio);
+
+		JLabel etiquetaCantDisponibles = new JLabel();
+        etiquetaCantDisponibles.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        etiquetaCantDisponibles.setText("Asientos Disponibles");
+        etiquetaCantDisponibles.setAlignmentY(0.0F);
+        panelEtiquetas.add(etiquetaCantDisponibles);
+
+    	JScrollPane scrollPane = new JScrollPane();
+    	scrollPane.setPreferredSize(new java.awt.Dimension(600, 400));
     	JPanel panelClases = new JPanel();
-/*
+    	panelClases.setPreferredSize(new java.awt.Dimension(0,0));
+
 		String consultaString = 
-	    "SELECT	salidas.vuelo, salidas.hora_sale, salidas.modelo_avion as modelo, salidas.hora_llega, TIMEDIFF(salidas.hora_llega, salidas.hora_sale) as estimado, " +  
- 		"a_origen.nombre as nom_sale, a_destino.nombre as nom_llega" + 
-		" FROM aeropuertos as a_destino" +
-		" JOIN aeropuertos as a_origen" +
-		" JOIN vuelos_programados as vp on vp.aeropuerto_salida = a_origen.codigo and a_destino.codigo = vp.aeropuerto_llegada" +
-		" JOIN salidas on salidas.vuelo = vp.numero and salidas.dia = ? " +
-		" JOIN instancias_vuelo as iv on iv.fecha = ? " +
-		" WHERE a_origen.ciudad = ? and a_destino.ciudad = ?";
+	    "SELECT " +
+    	" brinda.clase, brinda.precio, brinda.cant_asientos + (brinda.cant_asientos * clases.porcentaje) - count(rvc.numero) as cant_disponibles" +
+		" FROM instancias_vuelo as iv" +
+        " JOIN salidas          on iv.vuelo = salidas.vuelo and iv.dia = salidas.dia" +
+        " JOIN vuelos_programados as vp   on vp.numero = salidas.vuelo"+
+        " JOIN brinda           on brinda.vuelo = salidas.vuelo and brinda.dia = salidas.dia"+
+        " LEFT JOIN reserva_vuelo_clase as rvc on rvc.vuelo = salidas.vuelo and rvc.fecha_vuelo = iv.fecha and rvc.clase = brinda.clase"+
+        " JOIN clases           on clases.nombre = brinda.clase"+
+		" WHERE iv.vuelo = ? and iv.fecha = ?" +
+		" group by salidas.vuelo, iv.fecha, brinda.clase";
 	    
 	   
 	   	// Buscando ida
 	    try{
 			PreparedStatement statement = connection.prepareStatement(consultaString);
 
-			statement.setString(1, dayOfWeek(dtI));
+			statement.setString(1, vuelo);
+			statement.setString(2, fecha);
 
 		    ResultSet resultSet = statement.executeQuery();
 		    
-			while(resultado.next()){
-					panelClases.add(createPaneClase(resultado.getString("nombre"),
-													resultado.getString("precio"),
-													resultado.getString("cant_disponibles")));
+			while(resultSet.next()){
+					panelClases.add(createPaneClase(resultSet.getString("clase"),
+													resultSet.getString("precio"),
+													resultSet.getString("cant_disponibles")));
 			}
 
 	    	resultSet.close();
 	    	statement.close();
 
-    	} catch (ParseException e){
-    		e.printStackTrace();
     	} catch (SQLException e1){
     		e1.printStackTrace();
     	}
-    	*/
 
-		tabbedPane.add("vuelo " + vuelo, panelClases);
+
+    	scrollPane.setViewportView(panelClases);
+
+    	container.add(panelEtiquetas);
+    	container.add(scrollPane);
+
+		tabbedPane.add("vuelo " + vuelo, container);
 		tabbedPane.revalidate();
         tabbedPane.repaint();
 
     }
 
     private JPanel createPaneClase(String nombre, String precio, String cant_disp){
-    	JPanel clase = new JPanel();
-    	JLabel nombreClase = new JLabel();
-	    JLabel cantDisponibles = new JLabel();
+    	JPanel panelClase = new JPanel();
+    	JLabel labelNombre = new JLabel();
+    	JLabel labelPrecio = new JLabel();
+	    JLabel labelCantDisp = new JLabel();
 
-		nombreClase.setText(nombre + "	$" + precio);
-		cantDisponibles.setText(cant_disp);
+	    panelClase.setLayout(new java.awt.GridLayout(0, 3));
 
-		clase.setPreferredSize(new java.awt.Dimension(600, 100));
-		clase.setBackground(new java.awt.Color(204,204,204));
+		panelClase.setPreferredSize(new java.awt.Dimension(600, 60));
+		panelClase.setBackground(new java.awt.Color(204,204,204));
 
-		clase.add(nombreClase);
-		clase.add(cantDisponibles);
+	    labelNombre.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        labelNombre.setText(nombre);
+        panelClase.add(labelNombre);
 
-		return clase;
+        labelPrecio.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        labelPrecio.setText(precio);
+        labelPrecio.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        panelClase.add(labelPrecio);
+
+        labelCantDisp.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        labelCantDisp.setText(( (int) Float.parseFloat(cant_disp)) + "");
+        panelClase.add(labelCantDisp);
+
+		return panelClase;
     }
 
     private String dayOfWeek(Date date) throws ParseException{
