@@ -51,6 +51,8 @@ DELIMITER !
 	VALUES ('Argentina', 'Buenos Aires', 'Mar del Plata', 0);
 	INSERT INTO ubicaciones(pais,estado,ciudad,huso)
 	VALUES ('Argentina', 'Mendoza', 'Mendoza', 0);
+	INSERT INTO ubicaciones(pais,estado,ciudad,huso)
+	VALUES ('Argentina', 'Rio Negro', 'Bariloche', 0);
 	
 #---------------------------------------------------------------------------------------------------------------------------
 # AEROPUERTOS
@@ -66,6 +68,8 @@ INSERT INTO aeropuertos(codigo,nombre,telefono,direccion,pais,estado,ciudad)
  VALUES ('MDQ', 'Brig. Gral. Bartolomé de Colina', '(54)02234785811', 'diremdq', 'Argentina', 'Buenos Aires', 'Mar del Plata');
 INSERT INTO aeropuertos(codigo,nombre,telefono,direccion,pais,estado,ciudad) 
 VALUES ('MDZ', 'Gdor. Francisco Gabrielli', '(54)02614480017', 'diremdz', 'Argentina', 'Mendoza', 'Mendoza');
+INSERT INTO aeropuertos(codigo,nombre,telefono,direccion,pais,estado,ciudad) 
+VALUES ('BRC', 'Aeropuerto Bariloche', '(54)0213230017', 'direbrc', 'Argentina', 'Rio Negro', 'Bariloche');
 
 
 #---------------------------------------------------------------------------------------------------------------------------
@@ -88,6 +92,12 @@ VALUES ('MDZ', 'Gdor. Francisco Gabrielli', '(54)02614480017', 'diremdz', 'Argen
 	# un vuelo de  Mar del Plata a Buenos aires
 	INSERT INTO vuelos_programados(numero, aeropuerto_salida, aeropuerto_llegada)
 	VALUES ('MB', 'MDQ', 'AEP');
+
+	INSERT INTO vuelos_programados(numero, aeropuerto_salida, aeropuerto_llegada)
+	VALUES ('A1', 'BRC', 'AEP');
+
+	INSERT INTO vuelos_programados(numero, aeropuerto_salida, aeropuerto_llegada)
+	VALUES ('A2', 'BRC', 'AEP');
 	
 		
 #---------------------------------------------------------------------------------------------------------------------------
@@ -114,6 +124,12 @@ VALUES ('MDZ', 'Gdor. Francisco Gabrielli', '(54)02614480017', 'diremdz', 'Argen
     INSERT INTO salidas(vuelo, dia, hora_sale, hora_llega, modelo_avion) 
     VALUES ('BC3', dia(CONCAT(YEAR(DATE_ADD(NOW(), INTERVAL 1 YEAR)),'-01-03')), '08:00:00', '09:00:00', 'B-737');
 
+    INSERT INTO salidas(vuelo, dia, hora_sale, hora_llega, modelo_avion) 
+    VALUES ('A1', dia(CONCAT(YEAR(DATE_ADD(NOW(), INTERVAL 1 YEAR)),'-01-02')), '08:00:00', '09:00:00', 'B-737');
+
+    INSERT INTO salidas(vuelo, dia, hora_sale, hora_llega, modelo_avion) 
+    VALUES ('A2', dia(CONCAT(YEAR(DATE_ADD(NOW(), INTERVAL 1 YEAR)),'-01-02')), '10:00:00', '11:00:00', 'B-737');
+
 #---------------------------------------------------------------------------------------------------------------------------
 # INSTACIAS_VUELO
 
@@ -129,8 +145,12 @@ VALUES ('MDZ', 'Gdor. Francisco Gabrielli', '(54)02614480017', 'diremdz', 'Argen
 
 	INSERT INTO instancias_vuelo( vuelo, fecha, dia, estado) 
 	VALUES ('BC3', CONCAT(YEAR(DATE_ADD(NOW(), INTERVAL 1 YEAR)),'-01-03'), dia(CONCAT(YEAR(DATE_ADD(NOW(), INTERVAL 1 YEAR)),'-01-03')), 'a tiempo');
-	
-	
+
+	INSERT INTO instancias_vuelo( vuelo, fecha, dia, estado) 
+	VALUES ('A1', CONCAT(YEAR(DATE_ADD(NOW(), INTERVAL 1 YEAR)),'-01-02'), dia(CONCAT(YEAR(DATE_ADD(NOW(), INTERVAL 1 YEAR)),'-01-02')), 'a tiempo');
+
+	INSERT INTO instancias_vuelo( vuelo, fecha, dia, estado) 
+	VALUES ('A2', CONCAT(YEAR(DATE_ADD(NOW(), INTERVAL 1 YEAR)),'-01-02'), dia(CONCAT(YEAR(DATE_ADD(NOW(), INTERVAL 1 YEAR)),'-01-02')), 'a tiempo');
 	
 #---------------------------------------------------------------------------------------------------------------------------
 # CLASES
@@ -160,7 +180,6 @@ VALUES ('MDZ', 'Gdor. Francisco Gabrielli', '(54)02614480017', 'diremdz', 'Argen
 	VALUES ('DNI', 4, 'Juan', 'Perez', 'Belgrano 14', '0291 4556733', 'Argentino');
 	INSERT INTO pasajeros(doc_tipo, doc_nro, nombre, apellido, direccion, telefono, nacionalidad)
 	VALUES ('DNI', 5, 'Julian', 'Gomez', 'Donado 533', '0291 4543563', 'Argentino');
-	
 
 #---------------------------------------------------------------------------------------------------------------------------
 # EMPLEADOS
@@ -192,9 +211,14 @@ VALUES ('MDZ', 'Gdor. Francisco Gabrielli', '(54)02614480017', 'diremdz', 'Argen
 	INSERT INTO brinda(vuelo, dia, clase, precio, cant_asientos)
 	VALUES ('CB2', dia(CONCAT(YEAR(DATE_ADD(NOW(), INTERVAL 1 YEAR)),'-01-05')), 'Primera',  2000.00, 3);	
 
-	
 	INSERT INTO brinda(vuelo, dia, clase, precio, cant_asientos) 
 	VALUES ('BC3', dia(CONCAT(YEAR(DATE_ADD(NOW(), INTERVAL 1 YEAR)),'-01-03')), 'Ejecutiva', 3000.00, 10);	
+
+	INSERT INTO brinda(vuelo, dia, clase, precio, cant_asientos) 
+	VALUES ('A1', dia(CONCAT(YEAR(DATE_ADD(NOW(), INTERVAL 1 YEAR)),'-01-02')), 'Ejecutiva', 3000.00, 10);	
+
+	INSERT INTO brinda(vuelo, dia, clase, precio, cant_asientos) 
+	VALUES ('A2', dia(CONCAT(YEAR(DATE_ADD(NOW(), INTERVAL 1 YEAR)),'-01-02')), 'Ejecutiva', 3000.00, 10);	
 	
 
 #---------------------------------------------------------------------------------------------------------------------------
@@ -266,7 +290,6 @@ VALUES ('MDZ', 'Gdor. Francisco Gabrielli', '(54)02614480017', 'diremdz', 'Argen
 
 	INSERT INTO reserva_vuelo_clase(numero, vuelo, fecha_vuelo, clase) 
         VALUES (11, 'BC1', CONCAT(YEAR(DATE_ADD(NOW(), INTERVAL 1 YEAR)),'-01-02'), 'Ejecutiva');
-
 
         # reservas de CB2
     INSERT INTO reserva_vuelo_clase(numero, vuelo, fecha_vuelo, clase) 

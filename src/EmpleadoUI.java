@@ -251,14 +251,10 @@ public class EmpleadoUI {
         }
 
 	    String consultaString = 
-	    "SELECT	salidas.vuelo, iv.fecha, salidas.hora_sale, salidas.modelo_avion as modelo, salidas.hora_llega, TIMEDIFF(salidas.hora_llega, salidas.hora_sale) as estimado, " +  
- 		"a_origen.nombre as nom_sale, a_destino.nombre as nom_llega" + 
-		" FROM aeropuertos as a_destino" +
-		" JOIN aeropuertos as a_origen" +
-		" JOIN vuelos_programados as vp on vp.aeropuerto_salida = a_origen.codigo and a_destino.codigo = vp.aeropuerto_llegada" +
-		" JOIN salidas on salidas.vuelo = vp.numero and salidas.dia = ? " +
-		" JOIN instancias_vuelo as iv on iv.fecha = ? " +
-		" WHERE a_origen.ciudad = ? and a_destino.ciudad = ?";
+	    "SELECT vuelo, fecha, hora_sale, hora_llega, modelo, estimado, nom_sale, nom_llega" +
+		" FROM vuelos_disponibles" +
+		" WHERE dia = ? and fecha = ? and ciu_sale = ? and ciu_llega = ?" +
+		" GROUP BY vuelo";
 	    
 	    // Buscando ida
 	    try{
@@ -540,6 +536,8 @@ public class EmpleadoUI {
 		tabbedPane.add("vuelo " + vuelo, container);
 		tabbedPane.revalidate();
         tabbedPane.repaint();
+
+        tabbedPane.setSelectedIndex(tabbedPane.getTabCount()-1);
 
     }
 

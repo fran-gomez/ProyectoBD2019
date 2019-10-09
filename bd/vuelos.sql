@@ -202,4 +202,18 @@ FROM instancias_vuelo as iv
 				JOIN clases						on clases.nombre = brinda.clase
 group by salidas.vuelo, iv.fecha, brinda.clase;
 
+/*SELECT  salidas.vuelo, iv.fecha, salidas.hora_sale, salidas.modelo_avion as modelo, salidas.hora_llega, TIMEDIFF(salidas.hora_llega, salidas.hora_sale) as estimado,  
+    a_origen.nombre as nom_sale, a_destino.nombre as nom_llega
+     FROM aeropuertos as a_destino
+     JOIN aeropuertos as a_origen
+     JOIN vuelos_programados as vp on vp.aeropuerto_salida = a_origen.codigo and a_destino.codigo = vp.aeropuerto_llegada
+     JOIN salidas on salidas.vuelo = vp.numero and salidas.dia = 'ju'
+     JOIN instancias_vuelo as iv on iv.fecha = '2020-01-02'
+     WHERE a_origen.ciudad = 'Buenos Aires' and a_destino.ciudad = 'Cordoba';*/
+
+Select vuelo, fecha, hora_sale, hora_llega, modelo, estimado, nom_sale, nom_llega
+from vuelos_disponibles
+where dia = 'ju' and fecha = '2020-01-02' and ciu_sale = 'Bariloche' and ciu_llega = 'Buenos Aires'
+group by vuelo;
+
 GRANT SELECT ON vuelos_disponibles to cliente@'%';
