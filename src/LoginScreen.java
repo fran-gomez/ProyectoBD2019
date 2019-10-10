@@ -143,6 +143,8 @@ public class LoginScreen extends javax.swing.JPanel {
         username.setVisible(false);
         password.setVisible(false);
         login.setVisible(false);
+        labelPassword.setVisible(false);
+        labelUsername.setVisible(false);
     }
 
     private boolean esNumero(String str) { 

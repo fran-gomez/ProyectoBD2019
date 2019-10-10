@@ -1,6 +1,7 @@
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -12,6 +13,7 @@ public class AdminUI extends JPanel {
 
     protected JTextField sentencias;
     protected JTable resultados;
+    protected DefaultTableModel modelo;
     protected JList<String> tablas, campos;
 
     protected JFrame ventana;
@@ -23,7 +25,8 @@ public class AdminUI extends JPanel {
             this.ventana = ventana;
 
             sentencias = new JTextField();
-            resultados = new JTable();
+            modelo = new DefaultTableModel();
+            resultados = new JTable(modelo);
 
             tablas = new JList<>(obtenerTablas());
             campos = new JList<>();
@@ -33,9 +36,9 @@ public class AdminUI extends JPanel {
 
             this.setLayout(new BorderLayout());
             this.add(sentencias, BorderLayout.NORTH);
-            this.add(resultados, BorderLayout.CENTER);
-            this.add(tablas, BorderLayout.WEST);
-            this.add(campos, BorderLayout.SOUTH);
+            this.add(new JScrollPane(resultados), BorderLayout.CENTER);
+            this.add(new JScrollPane(tablas), BorderLayout.WEST);
+            this.add(new JScrollPane(campos), BorderLayout.SOUTH);
 
             ventana.getContentPane().add(this);
         } catch (SQLException e) {
@@ -73,9 +76,9 @@ public class AdminUI extends JPanel {
                     !comando.toLowerCase().equals("update")) {
                 resultado = sentencia.getResultSet();
 
-                int k = 0;
+                int k = 1;
                 while (resultado.next()) {
-                    System.out.println(resultado.getString(k++));
+                    System.out.println(resultado.getString(3));
                 }
             }
 
@@ -120,6 +123,8 @@ public class AdminUI extends JPanel {
 
                 campos.removeSelectionInterval(0, i-1);
                 campos.setListData(camposTabla);
+                // TODO aca es donde habria que agregar todos los datos de la BD
+                modelo.addRow(camposTabla);
 
             } catch (SQLException e) {
                 e.printStackTrace();
