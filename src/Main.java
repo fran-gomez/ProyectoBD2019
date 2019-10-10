@@ -18,10 +18,16 @@ public class Main {
             	JFrame ventana = new JFrame("BD-2019");
         		LoginScreen ls = new LoginScreen(ventana);
 
-		        ventana.setBounds(0, 0, 400, 200);
+ 				ventana.setBounds(0, 0, 400, 400);
 		        ventana.getContentPane().add(ls);
 		        ventana.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		        ventana.setVisible(true);
+
+        		ventana.setMaximumSize(new java.awt.Dimension(400, 400));
+        		ventana.setMinimumSize(new java.awt.Dimension(400, 400));
+        		ventana.setPreferredSize(new java.awt.Dimension(400, 400));
+        		ventana.setResizable(false);
+        		ventana.getContentPane().setLayout(new java.awt.FlowLayout());
             }
         });
         

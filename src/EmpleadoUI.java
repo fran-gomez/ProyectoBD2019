@@ -11,7 +11,6 @@ import java.text.SimpleDateFormat;
 import java.text.ParseException;
 
 // autentificacion de empleados y consultas sobre disponibilidad de vuelos
-
 public class EmpleadoUI {
 
 	private String nombre, apellido;
@@ -457,8 +456,6 @@ public class EmpleadoUI {
     }
 
     private void selectVuelo(String vuelo, String fecha){
-    	// TODO cambiar de pantalla
-
     	if(tabbedPane.getTitleAt(tabbedPane.getTabCount() - 1).indexOf("vuelo") >= 0) {
     		tabbedPane.remove(tabbedPane.getTabCount() - 1);
     	}
